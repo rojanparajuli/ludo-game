@@ -15,7 +15,8 @@ class GameScreen extends StatefulWidget {
   State<GameScreen> createState() => _GameScreenState();
 }
 
-class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateMixin {
+class _GameScreenState extends State<GameScreen>
+    with SingleTickerProviderStateMixin {
   late final LudoController _controller;
   bool _isGameFinished = false;
   bool _isAutoMoving = false;
@@ -39,6 +40,8 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
       diceRules: widget.diceRules,
       onPlayerWon: _handlePlayerWon,
       onGameFinished: _handleGameFinished,
+      
+      enableAudio: true,
     );
 
     _controller.addListener(_handleGameStateChanges);
@@ -55,10 +58,10 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
 
   void _handleGameStateChanges() {
     if (_isGameFinished) return;
-    
+
     final gameState = _controller.state;
     final shouldEnableDice = gameState.phase == LudoTurnPhase.awaitingRoll;
-    
+
     if (_isDiceEnabled != shouldEnableDice && !_isAutoMoving) {
       setState(() {
         _isDiceEnabled = shouldEnableDice;
@@ -74,7 +77,8 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
     }
 
     // Auto Move Execution Engine
-    if (gameState.phase == LudoTurnPhase.awaitingPieceSelection && !_isAutoMoving) {
+    if (gameState.phase == LudoTurnPhase.awaitingPieceSelection &&
+        !_isAutoMoving) {
       final legalMoves = gameState.legalMoves;
       if (legalMoves.isEmpty) return;
 
@@ -88,7 +92,7 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
             .where((p) => p.playerIndex == currentPlayerIdx)
             .toList();
         final piecesAtHome = playerPieces.where((p) => p.isHome).toList();
-        
+
         if (piecesAtHome.length == 4) {
           final homeExitMove = legalMoves.firstWhere(
             (move) => playerPieces.any((p) => p.id == move.pieceId && p.isHome),
@@ -105,8 +109,11 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
         Future.delayed(const Duration(milliseconds: 500), () {
           if (!mounted) return;
           try {
-            if (_controller.state.phase == LudoTurnPhase.awaitingPieceSelection &&
-                _controller.state.legalMoves.any((m) => m.pieceId == selectedId)) {
+            if (_controller.state.phase ==
+                    LudoTurnPhase.awaitingPieceSelection &&
+                _controller.state.legalMoves.any(
+                  (m) => m.pieceId == selectedId,
+                )) {
               _controller.selectPiece(selectedId);
             }
           } catch (e) {
@@ -115,7 +122,8 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
             if (mounted) {
               setState(() {
                 _isAutoMoving = false;
-                _isDiceEnabled = _controller.state.phase == LudoTurnPhase.awaitingRoll;
+                _isDiceEnabled =
+                    _controller.state.phase == LudoTurnPhase.awaitingRoll;
               });
             }
           }
@@ -156,10 +164,14 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
 
   String _ordinal(int n) {
     switch (n) {
-      case 1: return '1st';
-      case 2: return '2nd';
-      case 3: return '3rd';
-      default: return '${n}th';
+      case 1:
+        return '1st';
+      case 2:
+        return '2nd';
+      case 3:
+        return '3rd';
+      default:
+        return '${n}th';
     }
   }
 
@@ -195,11 +207,16 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
 
   Alignment _getDiceAlignment(int playerIndex) {
     switch (playerIndex) {
-      case 0: return Alignment.centerLeft;
-      case 1: return Alignment.centerRight;
-      case 2: return Alignment.centerRight;
-      case 3: return Alignment.centerLeft;
-      default: return Alignment.center;
+      case 0:
+        return Alignment.centerLeft;
+      case 1:
+        return Alignment.centerRight;
+      case 2:
+        return Alignment.centerRight;
+      case 3:
+        return Alignment.centerLeft;
+      default:
+        return Alignment.center;
     }
   }
 
@@ -212,7 +229,9 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         title: const Text('Quit Game?'),
-        content: const Text('Are you sure you want to exit? Your ongoing match progress will be discarded.'),
+        content: const Text(
+          'Are you sure you want to exit? Your ongoing match progress will be discarded.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -258,7 +277,10 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
       child: Scaffold(
         backgroundColor: AppColors.background,
         appBar: AppBar(
-          title: const Text('Ludo Match', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          title: const Text(
+            'Ludo Match',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
           backgroundColor: AppColors.primary,
           foregroundColor: AppColors.textLight,
           elevation: 0,
@@ -269,7 +291,6 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
             child: Column(
               children: [
                 // STATUS CONTROL HEADER
-                
                 const Spacer(),
 
                 SizedBox(
@@ -299,7 +320,11 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
                         color: AppColors.surface,
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: const [
-                          BoxShadow(color: AppColors.shadow, blurRadius: 12, offset: Offset(0, 4)),
+                          BoxShadow(
+                            color: AppColors.shadow,
+                            blurRadius: 12,
+                            offset: Offset(0, 4),
+                          ),
                         ],
                       ),
                       child: ClipRRect(
@@ -310,7 +335,7 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
                             pathCellColor: AppColors.pathCell,
                             safeCellColor: AppColors.safeZone,
                             centerCellColor: AppColors.centerCell,
-                            starIconColor: AppColors.starIcon
+                            starIconColor: AppColors.starIcon,
                           ),
                           controller: _controller,
                           showDice: false,
